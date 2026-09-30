@@ -8,7 +8,8 @@ USER 0
 WORKDIR /workspace
 
 # Cache deps before copying source so that we do not need to re-download for every build
-COPY go.mod go.sum ./
+# go.sum is optional (wildcard) since this module currently has no external deps
+COPY go.mod go.sum* ./
 
 # Fetch dependencies
 RUN go mod download
