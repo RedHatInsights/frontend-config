@@ -1,31 +1,22 @@
 ################################
-# STEP 1 build executable binary
+# STEP 1 build TypeScript source
 ################################
-FROM registry.access.redhat.com/hi/go:latest-fips-builder AS builder
+FROM registry.access.redhat.com/hi/nodejs:latest-builder AS builder
 
-USER 0
+WORKDIR /app
 
-WORKDIR /workspace
+COPY package*.json ./
+RUN npm ci
 
-# Cache deps before copying source so that we do not need to re-download for every build
-# go.sum is optional (wildcard) since this module currently has no external deps
-COPY go.mod go.sum* ./
-
-# Fetch dependencies
-RUN go mod download
-
-# Copy source files
 COPY . .
-
-# Build binary
-RUN CGO_ENABLED=1 go build -ldflags "-w -s" -o frontend-config
+RUN npm run build
 
 ############################
 # STEP 2 build a small image
 ############################
-FROM registry.access.redhat.com/hi/go:latest-fips
+FROM registry.access.redhat.com/hi/nodejs:latest
 
-WORKDIR /
+WORKDIR /app
 
 # Setup permissions to allow RDSCA to be written from clowder to container
 # https://docs.openshift.com/container-platform/4.11/openshift_images/create-images.html#images-create-guide-openshift_create-images
@@ -33,9 +24,11 @@ RUN mkdir -p /app && \
     chgrp -R 0 /app && \
     chmod -R g=u /app
 
-COPY --from=builder /workspace/frontend-config /app/frontend-config
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/dist ./dist
+RUN npm ci --omit=dev
 
 USER 1001
 
 EXPOSE 8000
-CMD ["/app/frontend-config"]
+CMD ["node", "dist/main.js"]

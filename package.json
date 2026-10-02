@@ -1,0 +1,15 @@
+{
+  "name": "frontend-config",
+  "version": "1.0.0",
+  "description": "The frontend generated configuration needs to be moved out of chrome-service and into a lightweight app that processes the config and uploads the assets to s3.",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.4"
+  }
+}
