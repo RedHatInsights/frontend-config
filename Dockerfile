@@ -1,7 +1,7 @@
 ################################
 # STEP 1 build TypeScript source
 ################################
-FROM registry.access.redhat.com/hi/nodejs:latest-builder AS builder
+FROM registry.access.redhat.com/hi/nodejs:latest-fips-builder AS builder
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ RUN npm run build
 ############################
 # STEP 2 build a small image
 ############################
-FROM registry.access.redhat.com/hi/nodejs:latest
+FROM registry.access.redhat.com/hi/nodejs:latest-fips
 
 WORKDIR /app
 
