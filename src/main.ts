@@ -1,7 +1,9 @@
 import http from 'node:http';
 
 const server = http.createServer((req, res) => {
-  if (req.url === '/health') {
+  const { pathname } = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`);
+
+  if (pathname === '/health') {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('ok\n');
     return;
